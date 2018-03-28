@@ -1,0 +1,20 @@
+---
+meta:
+  version: 1
+  author: siku2
+  title: The Hunt
+  description: |
+    I don't know yet this is basically just a test file because I want to test it
+    and newlines shouldn't break this
+  pyrequirements:
+    - requests
+    - beautifulsoup4
+
+settings:
+  store:
+    trash_img: http://www.thehindu.com/news/cities/chennai/article18402079.ece/alternates/FREE_660/07THDUMP
+---
+
+content:
+  - Test
+  -
