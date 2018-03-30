@@ -1,4 +1,6 @@
 .idea/
+inklecate.exe
+ink-engine-runtime.dll
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

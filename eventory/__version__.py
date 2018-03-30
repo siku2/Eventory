@@ -1,0 +1,6 @@
+__title__ = "Eventory"
+__description__ = "Story time!"
+__url__ = "https://github.com/siku2/Eventory"
+__version__ = "0.0.1"
+__author__ = "siku2"
+__license__ = "MIT"
