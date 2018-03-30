@@ -3,13 +3,13 @@ import importlib
 import re
 from io import TextIOBase
 from types import ModuleType
-from typing import Any, Mapping, Tuple, Union
+from typing import Any, Mapping, Sequence, Tuple, Type, Union
 
 import pip
 import yaml
 
 from .eventory import Eventory, EventoryHead
-from .exceptions import EventoryParserKeyError, EventoryParserValueError
+from .exceptions import EventoryNoParserFound, EventoryParserKeyError, EventoryParserValueError
 from .instructor import Eventructor
 
 
@@ -28,6 +28,7 @@ class Eventoriment:
 
 
 class EventoryParser(metaclass=abc.ABCMeta):
+    ALIASES = set()
     EVENTRUCTOR = Eventructor
     HEAD_BOUNDARY = re.compile(r"^-{3,}$", re.MULTILINE)
 
@@ -41,9 +42,7 @@ class EventoryParser(metaclass=abc.ABCMeta):
                 "title": meta["title"],
                 "description": meta.get("description", None),
                 "author": meta.get("author", None),
-                "version": int(meta.get("version", 1)),
-                "parser": meta.get("parser", None),
-                "pyrequirements": meta.get("pyrequirements", [])
+                "version": int(meta.get("version", 1))
             }
         except KeyError as e:
             raise EventoryParserKeyError(e.args[0])
@@ -52,14 +51,32 @@ class EventoryParser(metaclass=abc.ABCMeta):
         else:
             return data
 
-    def parse_head(self, head: Union[str, Mapping]) -> EventoryHead:
+    @classmethod
+    def find_parser(cls, target: Union[str, Sequence[str]]):
+        if isinstance(target, str):
+            target = [target]
+        for t in target:
+            if t == cls.__name__ or t in cls.ALIASES:
+                return cls
+
+            for subcls in cls.__subclasses__():
+                if t == subcls.__name__ or t in subcls.ALIASES:
+                    return subcls
+                else:
+                    return subcls.find_parser(target)
+        raise EventoryNoParserFound
+
+    def parse_head(self, head: Union[str, Mapping]) -> Tuple[Type["EventoryParser"], EventoryHead]:
         if isinstance(head, str):
             head = yaml.load(head)
         meta = self.extend_meta(head["meta"])
-        return EventoryHead(**meta)
+        parsers = head.get("parser", None)
+        parser = self.find_parser(parsers)
+        return parser, EventoryHead(**meta)
 
+    @staticmethod
     @abc.abstractmethod
-    def parse_content(self, content: Any) -> Any:
+    def parse_content(content: Any) -> Any:
         pass
 
     def load(self, stream: Union[str, TextIOBase]) -> Eventory:
@@ -68,6 +85,6 @@ class EventoryParser(metaclass=abc.ABCMeta):
         else:
             data = stream
         head, content = self.split(data)
-        head = self.parse_head(head)
-        content = self.parse_content(content)
-        return Eventory(head, content, self.EVENTRUCTOR)
+        parser, head, = self.parse_head(head)
+        content = parser.parse_content(content)
+        return Eventory(head, content, [], self.EVENTRUCTOR)

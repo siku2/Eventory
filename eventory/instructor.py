@@ -17,6 +17,16 @@ class Eventructor:
 
         self.loop = loop or asyncio.get_event_loop()
         self.executor = executor or ThreadPoolExecutor(3, f"Eventory \"{self.eventory.head.title}\"")
+        self.init()
+
+    def init(self):
+        pass
+
+    async def __aiter__(self):
+        return self
+
+    async def __anext__(self):
+        return await self.advance()
 
     async def ensure_requirements(self):
         tasks = []

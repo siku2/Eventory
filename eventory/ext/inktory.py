@@ -17,13 +17,17 @@ else:
 
 
 class InkEventructor(Eventructor):
-    def advance(self):
+    async def advance(self):
+        self.content.Continue()
         return
 
 
 class EventoryInkParser(EventoryParser):
+    ALIASES = {"Ink"}
+    EVENTRUCTOR = InkEventructor
 
-    def parse_content(self, content) -> Story:
+    @staticmethod
+    def parse_content(content) -> Story:
         content = EventoryInkParser.compile(content)
         story = Story(content)
         return story
@@ -46,6 +50,7 @@ class EventoryInkParser(EventoryParser):
 
 
 if __name__ == "__main__":
+    print(EventoryParser.find_parser("EventoryParser"))
     parser = EventoryInkParser()
-    head, content = parser.load(open("tests/april_fools_day.evory"))
-    print(head, content)
+    eventory = parser.load(open("tests/the_intercept.evory"))
+    print(eventory)

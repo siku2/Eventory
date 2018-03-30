@@ -3,15 +3,12 @@ parser: Ink
 
 meta:
   version: 1
-  author: siku2
-  title: The Hunt
+  author: inkle
+  title: The Intercept
   description: |
-    I don't know yet this is basically just a test file because I want to test it
-    and newlines shouldn't break this
-
-settings:
-  store:
-    trash_img: http://www.thehindu.com/news/cities/chennai/article18402079.ece/alternates/FREE_660/07THDUMP
+    Bletchley Park, 1942. A component from the Bombe machine, used to decode intercepted German messages, has gone missing.
+    One of the cryptographers is waiting to be interviewed, under direst suspicion.
+    Is he stupid enough to have attempted treason? Or is he clever enough to get away?
 ---
 
 // Character variables. We track just two, using a +/- scale

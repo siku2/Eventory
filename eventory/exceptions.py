@@ -9,6 +9,10 @@ class EventoryParserError(EventoryException):
     pass
 
 
+class EventoryNoParserFound(EventoryParserError, TypeError):
+    pass
+
+
 class EventoryParserKeyError(EventoryParserError, KeyError):
     def __init__(self, key: str):
         self.key = key
