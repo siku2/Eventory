@@ -13,10 +13,14 @@ addons:
       - mono-devel
       - ca-certificates-mono
 
+before_install:
+  - PY_LIBDIR=$(python -c 'import sysconfig; print(sysconfig.get_config_var("LIBDIR"))')
+  - export LD_LIBRARY_PATH=$PY_LIBDIR:$LD_LIBRARY_PATH
+  - pip install pycparser
+
 install:
   - pip install codecov
   - pip install pytest pytest-cov pytest-asyncio
-  - pip install pycparser
   - pip install -e .
 
 script:
