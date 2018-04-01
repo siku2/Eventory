@@ -10,4 +10,5 @@ from .parser import Eventoriment, EventoryParser, load, register_parser
 
 
 def load_ext(ext: str):
+    """Load an extension. This can be used to activate the Ink parser in order to load Inktory Eventories"""
     importlib.import_module(f"eventory.ext.{ext}", "eventory")

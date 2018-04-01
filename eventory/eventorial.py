@@ -10,3 +10,6 @@ class Eventorial:
     def __init__(self, *, eventory: Type[Eventory] = Eventory, parser: Type[EventoryParser] = EventoryParser):
         self.eventory = eventory
         self.parser = parser
+
+    def load(self, source: str):
+        pass

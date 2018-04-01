@@ -8,5 +8,8 @@ class DiscordEventarrator(Eventarrator):
     def __init__(self, channel: discord.abc.Messageable):
         self.channel = channel
 
-    async def output(self, out):
+    async def output(self, out: str):
         await self.channel.send(out)
+
+    async def input(self) -> str:
+        pass

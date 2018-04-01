@@ -10,6 +10,11 @@ if TYPE_CHECKING:
 
 
 class Eventructor:
+    """The Eventructor "plays" an Eventory to a Eventarrator.
+
+    If you think of the Eventory as the CD, the Eventructor is the player and the Eventarrator is the speakers
+    """
+
     def __init__(self, eventory: "Eventory", narrator: "Eventarrator", *, executor: Executor = None, loop: AbstractEventLoop = None):
         self.eventory = eventory
         self.narrator = narrator
@@ -27,7 +32,7 @@ class Eventructor:
         pass
 
     async def ensure_requirements(self):
-        if self.global_store.get("requirements_met"):
+        if self.global_store.get("_requirements_met"):
             return
 
         tasks = []
@@ -39,7 +44,7 @@ class Eventructor:
         for module in modules:
             self.global_store[module.__name__] = module
 
-        self.global_store["requirements_met"] = True
+        self.global_store["_requirements_met"] = True
 
     async def prepare(self):
         await self.ensure_requirements()
