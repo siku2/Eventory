@@ -5,7 +5,7 @@ from tempfile import TemporaryDirectory
 
 from System.IO import FileNotFoundException
 
-from eventory import EventoryParser, Eventructor
+from eventory import EventoryParser, Eventructor, register_parser
 
 try:
     clr.AddReference("ink-engine-runtime")
@@ -17,14 +17,36 @@ else:
 
 
 class InkEventructor(Eventructor):
-    async def advance(self):
-        self.content.Continue()
-        return
+
+    async def index_input(self, max_index: int):
+        while True:
+            inp = await self.narrator.input()
+            inp = inp.strip()
+            if inp.isnumeric():
+                num = int(inp)
+                if 0 < num <= max_index:
+                    return num - 1
+            await self.narrator.output(f"Please use a number between 1 and {max_index}\n")
+
+    async def play(self):
+        await self.prepare()
+        story = self.content
+        while True:
+            while story.canContinue:
+                out = story.Continue()
+                await self.narrator.output(out)
+
+            if story.currentChoices.Count > 0:
+                out = "\n".join(f"{i}. {choice.text}" for i, choice in enumerate(story.currentChoices, 1)) + "\n"
+                await self.narrator.output(out)
+                index = await self.index_input(story.currentChoices.Count)
+                story.ChooseChoiceIndex(index)
+            else:
+                break
 
 
 class EventoryInkParser(EventoryParser):
-    ALIASES = {"Ink"}
-    EVENTRUCTOR = InkEventructor
+    instructor = InkEventructor
 
     @staticmethod
     def parse_content(content) -> Story:
@@ -49,8 +71,4 @@ class EventoryInkParser(EventoryParser):
             return data
 
 
-if __name__ == "__main__":
-    print(EventoryParser.find_parser("EventoryParser"))
-    parser = EventoryInkParser()
-    eventory = parser.load(open("tests/the_intercept.evory"))
-    print(eventory)
+register_parser(EventoryInkParser, ("Ink",))

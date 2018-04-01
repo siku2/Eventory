@@ -9,6 +9,14 @@ meta:
     Bletchley Park, 1942. A component from the Bombe machine, used to decode intercepted German messages, has gone missing.
     One of the cryptographers is waiting to be interviewed, under direst suspicion.
     Is he stupid enough to have attempted treason? Or is he clever enough to get away?
+
+store:
+  nothing: seriously, nothing
+
+global_store:
+  bread:
+    - so much
+    - bread
 ---
 
 // Character variables. We track just two, using a +/- scale
