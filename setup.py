@@ -11,7 +11,7 @@ requires = [
 ]
 
 about = {}
-with open(os.path.join(here, "requests", "__version__.py"), "r", "utf-8") as f:
+with open(os.path.join(here, "eventory", "__version__.py"), "r") as f:
     exec(f.read(), about)
 
 setup(
