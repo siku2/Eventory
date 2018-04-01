@@ -16,6 +16,7 @@ addons:
 install:
   - pip install codecov
   - pip install pytest pytest-cov pytest-asyncio
+  - pip install pycparser
   - pip install -e .
 
 script:
