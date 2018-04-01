@@ -11,6 +11,12 @@ addons:
       - libglib2.0-dev
       - mono-complete
 
+before_install:
+  - mozroots --import --machine --sync
+  - certmgr -ssl -m https://go.microsoft.com
+  - certmgr -ssl -m https://nugetgallery.blob.core.windows.net
+  - certmgr -ssl -m https://nuget.org
+
 install:
   - pip install codecov
   - pip install pytest pytest-cov pytest-asyncio
