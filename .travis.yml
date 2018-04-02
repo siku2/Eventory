@@ -18,8 +18,8 @@ before_install:
 
   - sudo wget https://github.com/inkle/ink/releases/download/0.7.4/inklecate_windows_and_linux.zip
   - unzip inklecate_windows_and_linux.zip
-  - chmod +x inklecate
-  - sudo mv inklecate ink-engine-runtime.dll /usr/local/bin/
+  - chmod +x inklecate.exe
+  - sudo mv inklecate.exe ink-engine-runtime.dll /usr/local/bin/
 
 install:
   - pip install -U setuptools
