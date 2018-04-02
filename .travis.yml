@@ -1,44 +1,37 @@
 sudo: required
 language: python
-
 python:
-  - "3.6"
-
+- '3.6'
 addons:
   apt:
     packages:
-      - unzip
-
+    - unzip
 before_install:
-  - sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
-  - echo "deb http://download.mono-project.com/repo/ubuntu wheezy/snapshots/4.8.1 main" | sudo tee /etc/apt/sources.list.d/mono-xamarin.list
-  - sudo apt-get update
-  - sudo apt-get install -y clang
-  - sudo apt-get install -y mono-complete
-
-  - sudo wget https://github.com/inkle/ink/releases/download/0.7.4/inklecate_windows_and_linux.zip
-  - cd $TRAVIS_BUILD_DIR
-  - unzip inklecate_windows_and_linux.zip
-  - chmod +x inklecate.exe
-
+- sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+- echo "deb http://download.mono-project.com/repo/ubuntu wheezy/snapshots/4.8.1 main"
+  | sudo tee /etc/apt/sources.list.d/mono-xamarin.list
+- sudo apt-get update
+- sudo apt-get install -y clang
+- sudo apt-get install -y mono-complete
+- sudo wget https://github.com/inkle/ink/releases/download/0.7.4/inklecate_windows_and_linux.zip
+- cd $TRAVIS_BUILD_DIR
+- unzip inklecate_windows_and_linux.zip
+- chmod +x inklecate.exe
 install:
-  - pip install -U setuptools
-  - pip install pycparser
-  - pip install codecov
-  - pip install pytest pytest-cov pytest-asyncio
-  - pip install -e .
-
+- pip install -U setuptools
+- pip install pycparser
+- pip install codecov
+- pip install pytest pytest-cov pytest-asyncio
+- pip install -e .
 script:
-  - python -m pytest --cov=./
-
+- python -m pytest --cov=./
 after_success:
-  - codecov
-
+- codecov
 deploy:
   provider: pypi
   user: siku2
   password:
-    secure: UehLHIrhxY6obkxZb5j9ynmuhHz56x2WZfiPzBJokr8zd2fBZXxJ/Fd/GPE2U8otr1uLoKV1/9nkpjJ4O3t+BzkUhxHqRoKU7AaPLaQG4js2xKX/UbFbqqs69e0J14C9RT7F7u0xds28XizSMm2JkqJBJMnxlWMFc+dN/xeU3LatsTdpZ2WSFQB+Mybgff6+KFS97d7G93U8cPMmzRGI1pNZYfOQnBRlIBSFxF5hJ4xilUztb8eAgwCA9UCkuX66uGnmFElc1i1RU8PV4TDJ2UHx/TIp2jHRgyvKZ97YzO3J1Qlqcn8k5S9vb43qNfW5tRBAg3UBwU2Zbx7pi7lKNca6pKEuIIL/69FNLkuvGjtTIbfKszypqv/5ilKfA45ryAfSGCcOHI0zCbkw3UIW78w2bk2u86RWwAmB4YPw8WVC/i09sKG//ajar1kS6cXaKsqYNzforhYoHAvzsCTpcsV3bR7x17MU3ATiPvu2YC8Z34mHjRMQsVNrbIcrd7dVxqCvfO9bBMg4+HLY13gOrVTYuGku3Mmtt+hlrqP1+2cggA8dyPL7EfbRBfxoqTBv8gAEXmV9i7PE8/L47EY8Ra5s6Rbk70m/MFJmWc2g5Ip2u+P83JxmOaSkv/QbZ5TEDAd4e5hjrJmz2PZqtcG5HAhWkhqgfB3HsqqvDYg66Mo=
+    secure: Ojym3yNB1qu9roLSBIm40PgncGK7Ym6nm6yzVA9tWpppRkBIso3JM6kwcf1YPzQr5Vr9qlBe+8X0nb8Rh2sQ4uFtiKKSB9w9xBXyjW+IgAe6l9UYuiI5BYBO6lC/qLmT9fYXfi5HC8H0UDP1UzeZYynaRu/qhB19Qpm39sBgggaffe5EJc7GnOSO479mUiqbYzNA1FwxbxGZ0eD1U6k06N4vzIo88jENJseq6V/QgIAMwFUFO7mxz0O6dlA0OiYa6LKdRb+S4cVUGoVqvTuTToyQ4PZUuH6dQ+ObPh/BfoGrEyv0aX0WFj0W8QuI/3YFlrEbk3gX3QtTeHwoJbvULFgIGaC16lzhvmAetcuY9zFcOe07q/O2Ih2wrQSZfl99DfNtJSA0m6rk3BL2oUHlQzqYT6k2FNZp7qNMZa463JkG+krS15V8euycpUOMwW6UhYBrV2tN42HxW1nmhnqd5XmxcqUJZ7sLEzd07UWRLNlxs7L8fc1fq7SkxQYo6mV6QzU1svDxyEONp2Bnyqo+A7vIpDNX/hKLqs2tBLAA0IxaBKcDfAZf6X6YNf00Gxx2BoxJdr3DXg/gm7VcUV0pyoRasQpGnHxBAE0PUSsPpsETukTlUk1s2kmrLOrytduMbB0KvERWkJduuSOBkHL7rGddO0lCk7AhWld7naW4iRA=
   on:
     tags: true
     branch: master
