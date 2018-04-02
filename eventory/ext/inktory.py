@@ -1,5 +1,6 @@
 import clr
 import subprocess
+import sys
 from os import path
 from tempfile import TemporaryDirectory
 
@@ -14,6 +15,11 @@ except FileNotFoundException:
                             "download it from here: https://github.com/inkle/ink/releases") from None
 else:
     from Ink.Runtime import Story
+
+if sys.platform == "linux":
+    INKLECATE_CMD = ["mono", "inklecate.exe"]
+else:
+    INKLECATE_CMD = ["inklecate.exe"]
 
 
 class InkEventructor(Eventructor):
@@ -62,11 +68,8 @@ class EventoryInkParser(EventoryParser):
             with open(in_dir, "w+") as f:
                 f.write(ink)
             try:
-                subprocess.run(["mono", "inklecate.exe", in_dir], check=True)
+                subprocess.run([*INKLECATE_CMD, in_dir], check=True)
             except FileNotFoundError:
-                import os
-                print(os.getcwd())
-                print(os.listdir())
                 raise FileNotFoundError("Couldn't find \"inklecate.exe\", please add it to your PATH or to the CWD in order to use inktory. You can "
                                         "download it from here: https://github.com/inkle/ink/releases") from None
             with open(out_dir, "r", encoding="utf-8-sig") as f:
