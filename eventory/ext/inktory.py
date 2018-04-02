@@ -62,13 +62,13 @@ class EventoryInkParser(EventoryParser):
             with open(in_dir, "w+") as f:
                 f.write(ink)
             try:
-                subprocess.run(["inklecate.exe", in_dir], check=True)
+                subprocess.run(["mono", "inklecate.exe", in_dir], check=True)
             except FileNotFoundError:
                 import os
                 print(os.getcwd())
                 print(os.listdir())
                 raise FileNotFoundError("Couldn't find \"inklecate.exe\", please add it to your PATH or to the CWD in order to use inktory. You can "
-                                        "download it from here: https://github.com/inkle/ink/releases")
+                                        "download it from here: https://github.com/inkle/ink/releases") from None
             with open(out_dir, "r", encoding="utf-8-sig") as f:
                 data = f.read()
             return data
