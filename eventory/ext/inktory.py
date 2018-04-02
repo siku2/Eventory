@@ -65,7 +65,7 @@ class EventoryInkParser(EventoryParser):
                 subprocess.run(["inklecate.exe", in_dir], check=True)
             except FileNotFoundError:
                 raise FileNotFoundError("Couldn't find \"inklecate.exe\", please add it to your PATH or to the CWD in order to use inktory. You can "
-                                        "download it from here: https://github.com/inkle/ink/releases") from None
+                                        "download it from here: https://github.com/inkle/ink/releases")
             with open(out_dir, "r", encoding="utf-8-sig") as f:
                 data = f.read()
             return data
