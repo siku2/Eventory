@@ -12,9 +12,10 @@ before_install:
   - echo "deb http://download.mono-project.com/repo/debian wheezy-libtiff-compat main" | sudo tee -a /etc/apt/sources.list.d/mono-xamarin.list
   - sudo apt-get update
   - sudo DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confnew" install mono-devel mono-complete referenceassemblies-pcl ca-certificates-mono nunit-console
+  - sudo apt-get install -f
 
 install:
-  - pip install pycparser==2.17 pythonnet==2.2.2
+  - pip install pycparser pythonnet
   - pip install codecov
   - pip install pytest pytest-cov pytest-asyncio
   - pip install -e .
