@@ -24,6 +24,8 @@ else:
 
 
 class InkEventructor(Eventructor):
+    def init(self):
+        self.story = Story(self.content)
 
     async def index_input(self, max_index: int) -> int:
         while True:
@@ -37,7 +39,7 @@ class InkEventructor(Eventructor):
 
     async def play(self):
         await self.prepare()
-        story = self.content
+        story = self.story
         while True:
             while story.canContinue:
                 out = story.Continue()
@@ -58,8 +60,7 @@ class EventoryInkParser(EventoryParser):
     @staticmethod
     def parse_content(content) -> Story:
         content = EventoryInkParser.compile(content)
-        story = Story(content)
-        return story
+        return content
 
     @staticmethod
     def compile(ink: str) -> str:
