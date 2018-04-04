@@ -1,4 +1,5 @@
 import clr
+import os
 import subprocess
 import sys
 from os import path
@@ -11,7 +12,7 @@ from eventory import EventoryParser, Eventructor, register_parser
 try:
     clr.AddReference("ink-engine-runtime")
 except FileNotFoundException:
-    raise FileNotFoundError("Couldn't find \"ink-engine-runtime.dll\", please add it to your PATH or to the CWD in order to use inktory. You can "
+    raise FileNotFoundError(f"Couldn't find \"ink-engine-runtime.dll\", please add it to the CWD ({os.getcwd()}) in order to use inktory. You can "
                             "download it from here: https://github.com/inkle/ink/releases") from None
 else:
     from Ink.Runtime import Story
@@ -24,7 +25,7 @@ else:
 
 class InkEventructor(Eventructor):
 
-    async def index_input(self, max_index: int):
+    async def index_input(self, max_index: int) -> int:
         while True:
             inp = await self.narrator.input()
             inp = inp.strip()
@@ -70,8 +71,9 @@ class EventoryInkParser(EventoryParser):
             try:
                 subprocess.run([*INKLECATE_CMD, in_dir], check=True)
             except FileNotFoundError:
-                raise FileNotFoundError("Couldn't find \"inklecate.exe\", please add it to your PATH or to the CWD in order to use inktory. You can "
-                                        "download it from here: https://github.com/inkle/ink/releases") from None
+                raise FileNotFoundError(
+                    f"Couldn't find \"inklecate.exe\", please add it to your PATH or to the CWD ({os.getcwd()}) in order to use inktory. You can "
+                    "download it from here: https://github.com/inkle/ink/releases") from None
             with open(out_dir, "r", encoding="utf-8-sig") as f:
                 data = f.read()
             return data

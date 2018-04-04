@@ -39,7 +39,7 @@ class Eventory:
     def __repr__(self) -> str:
         return f"{self.meta}: {self.eventructor_cls}"
 
-    def __getattr__(self, item):
+    def __getattr__(self, item) -> Any:
         return getattr(self.meta, item)
 
     def narrate(self, eventarrator: "Eventarrator", **kwargs) -> "Eventructor":
