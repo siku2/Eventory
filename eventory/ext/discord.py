@@ -1,3 +1,5 @@
+from typing import Type
+
 import discord
 
 from eventory import Eventarrator
@@ -5,7 +7,7 @@ from eventory import Eventarrator
 
 class DiscordEventarrator(Eventarrator):
 
-    def __init__(self, client: discord.Client, channel: discord.abc.Messageable):
+    def __init__(self, client: discord.Client, channel: Type[discord.abc.Snowflake, discord.abc.Messageable]):
         self.client = client
         self.channel = channel
 
@@ -13,7 +15,13 @@ class DiscordEventarrator(Eventarrator):
         await self.channel.send(out)
 
     def input_check(self, msg: discord.Message) -> bool:
-        return self.client.user.id != msg.author.id
+        if self.channel.id != msg.channel.id:
+            return False
+        if self.client._connection.is_bot:  # bots should ignore themselves
+            if self.client.user.id == msg.author.id:
+                return False
+
+        return True
 
     async def input(self) -> str:
         msg = await self.client.wait_for("message", check=self.input_check)
