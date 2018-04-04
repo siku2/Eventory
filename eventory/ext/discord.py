@@ -1,4 +1,4 @@
-from typing import Type
+from typing import Union
 
 import discord
 
@@ -7,7 +7,7 @@ from eventory import Eventarrator
 
 class DiscordEventarrator(Eventarrator):
 
-    def __init__(self, client: discord.Client, channel: Type[discord.abc.Snowflake, discord.abc.Messageable]):
+    def __init__(self, client: discord.Client, channel: Union[discord.TextChannel, discord.DMChannel]):
         self.client = client
         self.channel = channel
 
