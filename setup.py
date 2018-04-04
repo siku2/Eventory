@@ -5,9 +5,11 @@ from setuptools import setup
 here = os.path.abspath(os.path.dirname(__file__))
 
 requires = [
+    "aiohttp",
     "pip",
     "pythonnet",
-    "pyyaml"
+    "pyyaml",
+    "yarl"
 ]
 
 about = {}
