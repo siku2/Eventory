@@ -2,9 +2,16 @@ import inspect
 from typing import Callable, Coroutine, Union
 
 import discord
-from discord.ext.commands import Bot
+from discord.ext.commands import Bot, Context, group
 
-from eventory import Eventarrator
+if discord.version_info[:3] < (1, 0, 0):
+    import warnings
+
+    warnings.warn(
+        "It seems that you're not using Discord.py rewrite. This extension is written for the rewrite version of Discord.py so it doesn't "
+        "necessarily run on your version", ImportWarning)
+
+from eventory import Eventarrator, Eventorial
 
 
 class DiscordEventarrator(Eventarrator):
@@ -33,12 +40,14 @@ class DiscordEventarrator(Eventarrator):
             ret = self.message_check(msg)
             if inspect.iscoroutine(ret):
                 ret = await ret
-            return ret
+            return bool(ret)
 
         if isinstance(self.client, Bot):
             ctx = await self.client.get_context(msg)
             if ctx.command:
                 return False
+
+        return True
 
     async def input(self) -> str:
         while True:
@@ -51,3 +60,13 @@ class DiscordEventarrator(Eventarrator):
 class EventoryCog:
     def __init__(self, bot: Bot):
         self.bot = bot
+        self.eventorial = Eventorial(loop=self.bot.loop)
+
+    @group()
+    async def eventory(self, ctx: Context):
+        """"""
+        pass
+
+
+def setup(bot: Bot):
+    bot.add_cog(EventoryCog(bot))
