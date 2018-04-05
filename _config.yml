@@ -1,0 +1,26 @@
+# Dependencies
+markdown:         redcarpet
+highlighter:      pygments
+
+# Permalinks
+permalink:        pretty
+relative_permalinks: true
+
+# Setup
+title:            Eventory
+tagline:          "A story telling framework"
+description:      "In Development"
+url:              https://siku2.github.io/Eventory/
+baseurl:          /
+
+author:
+  name:           "Simon Berger"
+  url:            https://siku2.github.io/
+
+paginate:         5
+
+# Custom vars
+version:          0.0.6
+
+github:
+  repo:           https://github.com/siku2/Eventory
