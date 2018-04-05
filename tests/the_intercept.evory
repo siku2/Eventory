@@ -2,7 +2,7 @@
 parser: Ink
 
 meta:
-  version: 1
+  version: 2
   author: inkle
   title: The Intercept
   description: |
