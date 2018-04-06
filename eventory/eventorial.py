@@ -2,7 +2,7 @@ import asyncio
 import atexit
 import re
 from io import TextIOBase
-from typing import Union
+from typing import Any, Union
 
 from aiohttp import ClientSession
 from yarl import URL
@@ -11,6 +11,7 @@ from .eventory import Eventory
 from .parser import load
 
 URL_REGEX = re.compile(r"http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+")
+_DEFAULT = object()
 
 
 class Eventorial:
@@ -29,8 +30,20 @@ class Eventorial:
     def __len__(self):
         return len(self.eventories)
 
+    def __del__(self):
+        self.cleanup()
+
+    def __contains__(self, item):
+        return item in self.eventories
+
+    def __delitem__(self, key):
+        return self.remove(key)
+
     def __getitem__(self, item):
         return self.get(item)
+
+    def __iter__(self):
+        return iter(self.eventories)
 
     def cleanup(self):
         loop = self.loop if not self.loop.is_closed() else asyncio.get_event_loop()
@@ -43,8 +56,19 @@ class Eventorial:
             eventory = load(source)
         self.eventories.append(eventory)
 
-    def get(self, title: str) -> Eventory:
-        return next(eventory for eventory in self.eventories if eventory.title == title)
+    def remove(self, item: Eventory):
+        pass
+
+    def get(self, title: str, default: Any = _DEFAULT) -> Eventory:
+
+        story = next((eventory for eventory in self.eventories if eventory.title == title), None)
+        if story is None:
+            if default is _DEFAULT:
+                raise ValueError(f"No Eventory with title \"{title}\"")
+            else:
+                return default
+        else:
+            return story
 
     async def load(self, source: Union[str, URL, TextIOBase], **kwargs):
         if isinstance(source, str):
