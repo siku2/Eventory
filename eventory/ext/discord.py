@@ -31,7 +31,7 @@ class DiscordEventarrator(Eventarrator):
         self.users = users
         self.message_check = message_check
         self.options = kwargs
-        self.sent_messages = deque(maxlen=3)
+        self.sent_messages = deque(maxlen=10)
 
     async def output(self, out: str):
         msg: Message = await self.channel.send(out)
@@ -68,7 +68,7 @@ class DiscordEventarrator(Eventarrator):
 
     async def input(self) -> str:
         while True:
-            msg = await self.client.wait_for("message", check=self.input_check)
+            msg = await self.client.wait_for("message", check=self.input_filter)
             if await self.input_check(msg):
                 break
         return msg.content
