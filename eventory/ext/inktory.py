@@ -1,4 +1,5 @@
 import clr
+import json
 import os
 import subprocess
 import sys
@@ -62,7 +63,13 @@ class EventoryInkParser(EventoryParser):
 
     @staticmethod
     def parse_content(content) -> Story:
-        content = EventoryInkParser.compile(content)
+        try:
+            # check if it's already compiled
+            json.loads(content)
+        except json.JSONDecodeError:
+            # if not, compile it
+            content = EventoryInkParser.compile(content)
+
         return content
 
     @staticmethod

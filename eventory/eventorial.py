@@ -2,6 +2,8 @@ import asyncio
 import atexit
 import re
 from io import TextIOBase
+from os import path
+from tempfile import TemporaryDirectory
 from typing import Any, Union
 
 from aiohttp import ClientSession
@@ -17,9 +19,15 @@ _DEFAULT = object()
 class Eventorial:
     """Another absolutely genius name for the Eventory manager... Don't you think?"""
 
-    def __init__(self, *, loop=None):
+    def __init__(self, directory: str = None, *, loop=None):
         self.loop = loop or asyncio.get_event_loop()
-        self.aiosession = ClientSession(loop=loop)
+        self.aiosession = ClientSession(loop=self.loop)
+        if directory:
+            self.directory = directory
+        else:
+            self._tempdir = TemporaryDirectory(prefix="Eventory_")
+            self.directory = self._tempdir.name
+
         self.eventories = []
 
         atexit.register(self.cleanup)
@@ -46,6 +54,8 @@ class Eventorial:
         return iter(self.eventories)
 
     def cleanup(self):
+        if hasattr(self, "_tempdir"):
+            self._tempdir.cleanup()
         loop = self.loop if not self.loop.is_closed() else asyncio.get_event_loop()
         loop.run_until_complete(self.aiosession.close())
 
@@ -70,12 +80,14 @@ class Eventorial:
         else:
             return story
 
-    async def load(self, source: Union[str, URL, TextIOBase], **kwargs):
+    async def load(self, source: Union[str, URL, TextIOBase], **kwargs) -> Eventory:
         if isinstance(source, str):
             if not URL_REGEX.match(source):
-                pass  # this is the name of a story
+                with open(path.join(self.directory, source), "r") as f:
+                    return await self.load(f, **kwargs)
         eventory = await get_eventory(source, session=self.aiosession, **kwargs)
         self.add(eventory)
+        return eventory
 
 
 async def get_eventory(source: Union[str, URL, TextIOBase], session: ClientSession = None, **kwargs) -> Eventory:
