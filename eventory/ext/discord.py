@@ -104,9 +104,9 @@ class EventoryCog:
     """
     instructors: Dict[int, Eventructor]
 
-    def __init__(self, bot: Bot):
+    def __init__(self, bot: Bot, *, directory: str = None):
         self.bot = bot
-        self.eventorial = Eventorial(loop=self.bot.loop)
+        self.eventorial = Eventorial(directory=directory, loop=self.bot.loop)
         self.instructors = {}
 
     def get_instructor(self, channel: Union[int, Context, DMChannel, TextChannel]) -> Optional[Eventructor]:
