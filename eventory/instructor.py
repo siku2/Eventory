@@ -28,6 +28,10 @@ class Eventructor:
     def __getattr__(self, item):
         return getattr(self.eventory, item)
 
+    @property
+    def stopped(self):
+        return getattr(self, "_stopped", False)
+
     def init(self):
         pass
 

@@ -5,6 +5,7 @@ import sys
 from os import path
 from tempfile import TemporaryDirectory
 
+# noinspection PyUnresolvedReferences, PyPackageRequirements
 from System.IO import FileNotFoundException
 
 from eventory import EventoryParser, Eventructor, register_parser
@@ -15,6 +16,7 @@ except FileNotFoundException:
     raise FileNotFoundError(f"Couldn't find \"ink-engine-runtime.dll\", please add it to the CWD ({os.getcwd()}) in order to use inktory. You can "
                             "download it from here: https://github.com/inkle/ink/releases") from None
 else:
+    # noinspection PyUnresolvedReferences, PyPackageRequirements
     from Ink.Runtime import Story
 
 if sys.platform == "linux":
@@ -24,6 +26,8 @@ else:
 
 
 class InkEventructor(Eventructor):
+    story: Story
+
     def init(self):
         self.story = Story(self.content)
 
@@ -39,17 +43,16 @@ class InkEventructor(Eventructor):
 
     async def play(self):
         await self.prepare()
-        story = self.story
         while True:
-            while story.canContinue:
-                out = story.Continue()
+            while self.story.canContinue:
+                out = self.story.Continue()
                 await self.narrator.output(out)
 
-            if story.currentChoices.Count > 0:
-                out = "\n".join(f"{i}. {choice.text}" for i, choice in enumerate(story.currentChoices, 1)) + "\n"
+            if self.story.currentChoices.Count > 0:
+                out = "\n".join(f"{i}. {choice.text}" for i, choice in enumerate(self.story.currentChoices, 1)) + "\n"
                 await self.narrator.output(out)
-                index = await self.index_input(story.currentChoices.Count)
-                story.ChooseChoiceIndex(index)
+                index = await self.index_input(self.story.currentChoices.Count)
+                self.story.ChooseChoiceIndex(index)
             else:
                 break
 

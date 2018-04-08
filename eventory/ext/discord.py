@@ -1,7 +1,10 @@
 import inspect
-from typing import Callable, Coroutine, Union
+from collections import Iterable, deque
+from typing import Callable, Coroutine, Dict, Optional, Sequence, Union
 
 import discord
+from discord import Client, Colour, DMChannel, Embed, Message, TextChannel, User
+from discord.embeds import EmptyEmbed
 from discord.ext.commands import Bot, Context, group
 
 if discord.version_info[:3] < (1, 0, 0):
@@ -11,31 +14,44 @@ if discord.version_info[:3] < (1, 0, 0):
         "It seems that you're not using Discord.py rewrite. This extension is written for the rewrite version of Discord.py so it doesn't "
         "necessarily run on your version", ImportWarning)
 
-from eventory import Eventarrator, Eventorial
+from eventory import Eventarrator, Eventorial, Eventructor
 
 
 class DiscordEventarrator(Eventarrator):
 
-    def __init__(self, client: discord.Client, channel: Union[discord.TextChannel, discord.DMChannel],
-                 message_check: Callable[[discord.Message], Union[bool, Coroutine]] = None, **kwargs):
+    def __init__(self, client: Client, channel: Union[TextChannel, DMChannel], users: Union[User, Sequence[User]] = None, *,
+                 message_check: Callable[[Message], Union[bool, Coroutine]] = None, **kwargs):
         self.client = client
         self.channel = channel
-
+        if users:
+            if isinstance(users, Iterable):
+                users = list(users)
+            else:
+                users = [users]
+        self.users = users
         self.message_check = message_check
+        self.sent_messages = deque(maxlen=3)
 
     async def output(self, out: str):
-        await self.channel.send(out)
+        msg: Message = await self.channel.send(out)
+        self.sent_messages.appendleft(msg.id)
 
-    def input_filter(self, msg: discord.Message) -> bool:
+    def input_filter(self, msg: Message) -> bool:
+        if msg.id in self.sent_messages:
+            return False
         if self.channel.id != msg.channel.id:
             return False
+        if self.users and msg.author not in self.users:
+            return False
+
+        # noinspection PyProtectedMember
         if self.client._connection.is_bot:  # bots should ignore themselves
             if self.client.user.id == msg.author.id:
                 return False
 
         return True
 
-    async def input_check(self, msg: discord.Message) -> bool:
+    async def input_check(self, msg: Message) -> bool:
         if self.message_check:
             ret = self.message_check(msg)
             if inspect.iscoroutine(ret):
@@ -57,16 +73,95 @@ class DiscordEventarrator(Eventarrator):
         return msg.content
 
 
+async def add_embed(msg: Union[Context, Message], description: str = EmptyEmbed, colour: Union[int, Colour] = EmptyEmbed,
+                    author: Union[str, Dict] = None, footer: Union[str, Dict] = None, **kwargs):
+    if isinstance(msg, Context):
+        msg = msg.message
+    em = Embed(description=description, colour=colour, **kwargs)
+    if author:
+        if isinstance(author, dict):
+            em.set_author(**author)
+        else:
+            em.set_author(name=author)
+    if footer:
+        if isinstance(footer, dict):
+            em.set_footer(**footer)
+        else:
+            em.set_footer(text=footer)
+    await msg.edit(embed=em)
+
+
+ERROR_COLOUR = 0xFF0000
+INFO_COLOUR = 0xC8FF6A
+
+
 class EventoryCog:
+    instructors: Dict[int, Eventructor]
+
     def __init__(self, bot: Bot):
         self.bot = bot
         self.eventorial = Eventorial(loop=self.bot.loop)
+        self.instructors = {}
+
+    def get_instructor(self, channel: Union[int, Context, DMChannel, TextChannel]) -> Optional[Eventructor]:
+        if isinstance(channel, Context):
+            channel = channel.channel
+        if isinstance(channel, (DMChannel, TextChannel)):
+            channel = channel.id
+        instructor = self.instructors.get(channel, None)
+        if instructor:
+            if instructor.stopped:
+                self.instructors.pop(channel)
+            else:
+                return instructor
+        return None
 
     @group()
     async def eventory(self, ctx: Context):
-        """"""
-        pass
+        """Yay"""
+        ...
+
+    @eventory.command()
+    async def play(self, ctx: Context, story: str):
+        """Play an Eventory"""
+        if self.get_instructor(ctx):
+            ...
+            return
+        if story not in self.eventorial:
+            ...
+            return
+        story = self.eventorial[story]
+        narrator = DiscordEventarrator(self.bot, ctx.channel)
+        instructor = story.narrate(narrator)
+        self.instructors[ctx.channel.id] = instructor
+        await instructor.play()
+
+    @eventory.command()
+    async def info(self, ctx: Context, story: str = None):
+        """Get some information about an Eventory"""
+        if not story:
+            instructor = self.get_instructor(ctx)
+            if not instructor:
+                await add_embed(ctx, "No Eventory currently running in this chat", ERROR_COLOUR)
+                return
+            story = instructor.eventory
+        else:
+            story = self.eventorial.get(story, None)
+            if not story:
+                ...
+                return
+        await add_embed(ctx, title=story.title, description=story.description, footer=f"Version {story.version}", author=story.author,
+                        colour=INFO_COLOUR)
+
+    @eventory.command()
+    async def abort(self, ctx: Context):
+        """Abort the current Eventory in this channel."""
+        instructor = self.get_instructor(ctx)
+        if instructor:
+            instructor.stop()
+        else:
+            await add_embed(ctx, "No Eventory currently running in this chat", ERROR_COLOUR)
 
 
 def setup(bot: Bot):
-    bot.add_cog(EventoryCog(bot))
+    bot.add_cog(EventoryCog)
