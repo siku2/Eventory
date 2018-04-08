@@ -131,7 +131,7 @@ class EventoryCog:
     async def load(self, ctx: Context, source: str):
         """Load an Eventory"""
         try:
-            story = self.eventorial.load(source)
+            story = await self.eventorial.load(source)
         except:
             await add_embed(ctx, f"Couldn't load \"{source}\"", ERROR_COLOUR)
         else:
