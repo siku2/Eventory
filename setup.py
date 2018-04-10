@@ -13,12 +13,12 @@ requires = [
 ]
 
 dependency_links = [
-    "https://github.com/Rapptz/discord.py/archive/rewrite.zip#egg=discord.py-1.0.0"
+    "git+https://github.com/Rapptz/discord.py/tree/rewrite#egg=discord.py-1.0.0"
 ]
 
 extras_require = {
     "ink": ["pycparser", "pythonnet"],
-    "discord": ["discord.py==1.0.0"]
+    "discord": ["discord.py"]
 }
 
 about = {}
