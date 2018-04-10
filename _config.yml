@@ -1,25 +1,26 @@
 # Dependencies
-markdown:         kramdown
-highlighter:      rouge
+markdown:             kramdown
+highlighter:          rouge
 
 # Permalinks
-permalink:        pretty
+permalink:            pretty
 
 # Setup
-title:            Eventory
-tagline:          "A story telling framework"
-description:      "In Development"
-url:              https://siku2.github.io/Eventory
-baseurl:          /
+title:                Eventory
+tagline:              "A story telling framework"
+description:          "In Development"
+documentation_url:    http://eventory.readthedocs.io
+url:                  https://siku2.github.io/Eventory
+baseurl:              /
 
 author:
-  name:           "Simon Berger"
-  url:            https://siku2.github.io/
+  name:               "Simon Berger"
+  url:                https://siku2.github.io/
 
-paginate:         5
+paginate:             5
 
 # Custom vars
-version:          0.0.6
+version:              0.1.0
 
 github:
-  repo:           https://github.com/siku2/Eventory
+  repo:               https://github.com/siku2/Eventory
