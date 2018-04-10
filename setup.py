@@ -16,7 +16,7 @@ dependency_links = [
 ]
 
 extras_require = {
-    "ink": ["pycparser", "pythonnet"],
+    "ink": ["pythonnet"],
     "discord": ["discord.py"]
 }
 
