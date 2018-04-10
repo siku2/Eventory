@@ -19,11 +19,9 @@ before_install:
 - chmod +x inklecate.exe
 install:
 - pip install -U setuptools
-- pip install pycparser
-- pip install https://github.com/Rapptz/discord.py/archive/rewrite.zip
 - pip install codecov
 - pip install pytest pytest-cov pytest-asyncio
-- pip install -e .
+- pip install -e .[ink,discord]
 script:
 - python -m pytest --cov=./
 after_success:

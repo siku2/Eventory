@@ -12,6 +12,11 @@ requires = [
     "yarl"
 ]
 
+extras_require = {
+    "ink": ["pycparser", "pythonnet"],
+    "discord": ["https://github.com/Rapptz/discord.py/archive/rewrite.zip"]
+}
+
 about = {}
 with open(os.path.join(here, "eventory", "__version__.py"), "r") as f:
     exec(f.read(), about)
@@ -26,6 +31,7 @@ setup(
     license=about["__license__"],
     packages=["eventory", "eventory.ext"],
     install_requires=requires,
+    extras_require=extras_require,
     classifiers=[
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3.6"
