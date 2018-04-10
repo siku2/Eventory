@@ -7,7 +7,6 @@ here = os.path.abspath(os.path.dirname(__file__))
 requires = [
     "aiohttp",
     "pip",
-    "pythonnet",
     "pyyaml",
     "yarl"
 ]
