@@ -1,6 +1,7 @@
 import inspect
+import logging
 from collections import Iterable, deque
-from typing import Callable, Coroutine, Dict, Optional, Sequence, Union
+from typing import Dict, Optional, Union
 
 import discord
 from discord import Client, Colour, DMChannel, Embed, Message, TextChannel, User
@@ -16,44 +17,52 @@ if discord.version_info[:3] < (1, 0, 0):
         "It seems that you're not using Discord.py rewrite. This extension is written for the rewrite version of Discord.py so it doesn't "
         "necessarily run on your version", ImportWarning)
 
+log = logging.getLogger(__name__)
+
 
 class DiscordEventarrator(Eventarrator):
 
-    def __init__(self, client: Client, channel: Union[TextChannel, DMChannel], users: Union[User, Sequence[User]] = None, *,
-                 message_check: Callable[[Message], Union[bool, Coroutine]] = None, **kwargs):
+    def __init__(self, client: Client, channel: Union[TextChannel, DMChannel], **options):
         self.client = client
         self.channel = channel
+        users = options.get("users")
         if users:
             if isinstance(users, Iterable):
-                users = list(users)
+                users = tuple(users)
             else:
-                users = [users]
+                users = (users,)
         self.users = users
-        self.message_check = message_check
-        self.options = kwargs
+        self.message_check = options.get("message_check")
+        self.options = options
         self.sent_messages = deque(maxlen=10)
 
     async def output(self, out: str):
+        if not out:
+            log.warning("Not outputting empty message")
+            return
         msg: Message = await self.channel.send(out)
         self.sent_messages.appendleft(msg.id)
+        log.debug(f"sent \"{out}\"")
 
     def input_filter(self, msg: Message) -> bool:
         if msg.id in self.sent_messages:
+            log.debug(f"Ignoring {msg} (sent by Eventory)!")
             return False
         if self.channel.id != msg.channel.id:
+            log.debug(f"Ignoring {msg} (wrong channel)!")
             return False
         if self.users and msg.author not in self.users:
+            log.debug(f"Ignoring {msg} (not sent by {self.users})!")
             return False
-
-        # noinspection PyProtectedMember
-        if self.client._connection.is_bot:  # bots should ignore themselves
-            if self.client.user.id == msg.author.id:
-                return False
+        if msg.author.bot:  # bots should be ignored
+            log.debug(f"Ignoring {msg} (Message sent by bot)!")
+            return False
 
         return True
 
     async def input_check(self, msg: Message) -> bool:
         if self.message_check:
+            log.debug(f"Running custom message check!")
             ret = self.message_check(msg)
             if inspect.iscoroutine(ret):
                 ret = await ret
@@ -62,6 +71,7 @@ class DiscordEventarrator(Eventarrator):
         if isinstance(self.client, Bot):
             ctx = await self.client.get_context(msg)
             if ctx.command:
+                log.debug(f"Ignoring {msg} (Command detected)!")
                 return False
 
         return True
@@ -74,14 +84,16 @@ class DiscordEventarrator(Eventarrator):
         return msg.content
 
 
-async def add_embed(msg: Union[Context, Message], description: str = EmptyEmbed, colour: Union[int, Colour] = EmptyEmbed,
-                    author: Union[str, Dict] = None, footer: Union[str, Dict] = None, **kwargs):
+async def add_embed(msg: Union[Context, Message], description: str = EmptyEmbed, colour: Union[int, Colour] = EmptyEmbed, *,
+                    author: Union[str, Dict, User] = None, footer: Union[str, Dict] = None, **kwargs):
     if isinstance(msg, Context):
         msg = msg.message
     em = Embed(description=description, colour=colour, **kwargs)
     if author:
         if isinstance(author, dict):
             em.set_author(**author)
+        elif isinstance(author, User):
+            em.set_author(name=author.name, icon_url=author.avatar_url)
         else:
             em.set_author(name=author)
     if footer:
@@ -117,6 +129,7 @@ class EventoryCog:
         instructor = self.instructors.get(channel, None)
         if instructor:
             if instructor.stopped:
+                log.info(f"Found {instructor}, but it's already stopped!")
                 self.instructors.pop(channel)
             else:
                 return instructor
@@ -133,8 +146,10 @@ class EventoryCog:
         try:
             story = await self.eventorial.load(source)
         except:
+            log.exception(f"Couldn't load Eventory {source}")
             await add_embed(ctx, f"Couldn't load \"{source}\"", ERROR_COLOUR)
         else:
+            log.info(f"loaded {story}")
             await add_embed(ctx, f"Loaded \"{story.title}\" by {story.author}", SUCCESS_COLOUR)
 
     @eventory.command()
@@ -152,6 +167,7 @@ class EventoryCog:
         self.instructors[ctx.channel.id] = instructor
         await add_embed(ctx, f"Playing \"{story.title}\" by {story.author}", SUCCESS_COLOUR)
         await instructor.play()
+        log.info(f"playing {story} in {ctx.channel}")
 
     @eventory.command()
     async def info(self, ctx: Context, story: str = None):
@@ -176,6 +192,7 @@ class EventoryCog:
         instructor = self.get_instructor(ctx)
         if instructor:
             instructor.stop()
+            log.info(f"stopped {instructor} in {ctx.channel}")
         else:
             await add_embed(ctx, "No Eventory currently running in this chat", ERROR_COLOUR)
 
@@ -185,3 +202,4 @@ EventoryCog.__name__ = "Eventory"
 
 def setup(bot: Bot):
     bot.add_cog(EventoryCog(bot))
+    log.info("loaded Eventory extension!")

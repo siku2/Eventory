@@ -4,12 +4,20 @@ I call it eventory because it's an event story. Geddit? Genius, right? I know.
 something something by me.
 """
 
-from typing import Any, Sequence, TYPE_CHECKING, Type
+import re
+from io import TextIOBase
+from typing import Any, Dict, Sequence, TYPE_CHECKING, Type, Union
+
+import yaml
+
+from . import constants
 
 if TYPE_CHECKING:
     from .parser import Eventoriment
     from .instructor import Eventructor
     from .narrator import Eventarrator
+
+FILENAME_REGEX = re.compile(r"[\W_]+")
 
 
 class EventoryMeta:
@@ -23,6 +31,14 @@ class EventoryMeta:
 
     def __repr__(self) -> str:
         return f"\"{self.title}\" - {self.author} ({self.version})"
+
+    def to_dict(self) -> Dict[str, Any]:
+        data = vars(self)
+        data["requirements"] = [req.to_dict() for req in data["requirements"]]
+        return data
+
+    def serialise(self) -> str:
+        return yaml.dump(self.to_dict())
 
 
 class Eventory:
@@ -42,5 +58,28 @@ class Eventory:
     def __getattr__(self, item) -> Any:
         return getattr(self.meta, item)
 
+    @property
+    def filename(self):
+        title = FILENAME_REGEX.sub("_", self.title.lower())
+        return f"{title}{constants.FILE_SUFFIX}"
+
     def narrate(self, eventarrator: "Eventarrator", **kwargs) -> "Eventructor":
         return self.eventructor_cls(self, eventarrator, **kwargs)
+
+    def serialise(self) -> str:
+        head = self.meta.serialise()
+        content = self.eventructor_cls.serialise_content(self.content)
+        return f"---\n{head}\n---\n\n{content}"
+
+    def save(self, fp: Union[str, TextIOBase] = None) -> TextIOBase:
+        if not fp:
+            fp = self.filename
+
+        if isinstance(fp, str):
+            fp = fp.format(filename=self.filename)
+            with open(fp, "w+", encoding="utf-8") as f:
+                return self.save(f)
+
+        data = self.serialise()
+        fp.write(data)
+        return fp

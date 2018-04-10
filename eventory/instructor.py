@@ -1,12 +1,15 @@
 import asyncio
+import logging
 from asyncio import AbstractEventLoop
 from concurrent.futures import Executor, ThreadPoolExecutor
 from copy import deepcopy
-from typing import TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .eventory import Eventory
     from .narrator import Eventarrator
+
+log = logging.getLogger(__name__)
 
 
 class Eventructor:
@@ -35,8 +38,16 @@ class Eventructor:
     def init(self):
         pass
 
+    def serialise(self) -> str:
+        raise NotImplementedError
+
+    @classmethod
+    def serialise_content(cls, content: Any) -> str:
+        return str(content)
+
     async def ensure_requirements(self):
         if self.global_store.get("_requirements_met"):
+            log.debug("requirements already met (\"_requirements_met\" flag is set)")
             return
 
         tasks = []
@@ -51,7 +62,9 @@ class Eventructor:
         self.global_store["_requirements_met"] = True
 
     async def prepare(self):
+        log.debug(f"{self} preparing")
         await self.ensure_requirements()
+        log.debug(f"{self} all set!")
 
     async def play(self):
         raise NotImplementedError
