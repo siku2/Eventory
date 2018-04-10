@@ -12,9 +12,13 @@ requires = [
     "yarl"
 ]
 
+dependency_links = [
+    "https://github.com/Rapptz/discord.py/archive/rewrite.zip#egg=discord.py-1.0.0"
+]
+
 extras_require = {
     "ink": ["pycparser", "pythonnet"],
-    "discord": ["https://github.com/Rapptz/discord.py/archive/rewrite.zip"]
+    "discord": ["discord.py==1.0.0"]
 }
 
 about = {}
@@ -32,6 +36,7 @@ setup(
     packages=["eventory", "eventory.ext"],
     install_requires=requires,
     extras_require=extras_require,
+    dependency_links=dependency_links,
     classifiers=[
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3.6"
