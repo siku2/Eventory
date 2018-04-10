@@ -10,6 +10,8 @@ Welcome to Eventory's documentation!
    :maxdepth: 2
 
    eventory
+   eventory.ext
+   modules
 
 
 

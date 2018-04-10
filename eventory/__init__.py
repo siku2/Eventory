@@ -13,6 +13,10 @@ log = logging.getLogger(__name__)
 
 
 def load_ext(ext: str):
-    """Load an extension. This can be used to activate the Ink parser in order to load Inktory Eventories"""
+    """Load an extension. This can be used to activate the Ink parser in order to load Inktory Eventories.
+
+    Args:
+        ext (str): The name of the extension to load (i.e. "inktory").
+    """
     importlib.import_module(f"eventory.ext.{ext}", "eventory")
     log.info(f"loaded extension {ext}")

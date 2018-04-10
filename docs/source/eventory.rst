@@ -1,23 +1,77 @@
-Eventory
-==========
+eventory package
+================
 
-.. automodule:: eventory
-   :members:
+Subpackages
+-----------
 
-.. automodule:: eventory.eventory
-   :members:
+.. toctree::
+
+    eventory.ext
+
+Submodules
+----------
+
+eventory.constants module
+-------------------------
+
+.. automodule:: eventory.constants
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+eventory.eventorial module
+--------------------------
 
 .. automodule:: eventory.eventorial
-   :members:
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
-.. automodule:: eventory.parser
-   :members:
+eventory.eventory module
+------------------------
 
-.. automodule:: eventory.narrator
-   :members:
+.. automodule:: eventory.eventory
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
-.. automodule:: eventory.instructor
-   :members:
+eventory.exceptions module
+--------------------------
 
 .. automodule:: eventory.exceptions
-   :members:
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+eventory.instructor module
+--------------------------
+
+.. automodule:: eventory.instructor
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+eventory.narrator module
+------------------------
+
+.. automodule:: eventory.narrator
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+eventory.parser module
+----------------------
+
+.. automodule:: eventory.parser
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: eventory
+    :members:
+    :undoc-members:
+    :show-inheritance:
