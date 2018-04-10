@@ -4,6 +4,7 @@
 [![Docs](https://readthedocs.org/projects/eventory/badge/?version=latest)](http://eventory.readthedocs.io/en/latest/?badge=latest)
 
 [![PyPI](https://img.shields.io/pypi/v/Eventory.svg)](https://pypi.org/project/Eventory/)
+[![Python Version](https://img.shields.io/pypi/pyversions/Eventory.svg)](https://pypi.org/project/Eventory)
 
 # Eventory
 Write your own fancy stories and all that bla...

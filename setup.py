@@ -25,5 +25,9 @@ setup(
     author_email=about["__author_email__"],
     license=about["__license__"],
     packages=["eventory", "eventory.ext"],
-    install_requires=requires
+    install_requires=requires,
+    classifiers=[
+        "License :: OSI Approved :: MIT License",
+        "Programming Language :: Python :: 3.6"
+    ]
 )
