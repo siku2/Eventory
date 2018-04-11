@@ -17,17 +17,18 @@
 # sys.path.insert(0, os.path.abspath('.'))
 
 import sys
-from unittest.mock import MagicMock
 
 
-class Mock(MagicMock):
-    @classmethod
-    def __getattr__(cls, name):
-        return MagicMock()
+class Mock:
+    def __getattr__(self, item):
+        return Mock()
 
-    # for discord.version_info comparison
+    def __getitem__(self, item):
+        return Mock()
+
+    # fix for discord.version_info
     def __lt__(self, other):
-        return True
+        return False
 
 
 MOCK_MODULES = ["clr", "System.IO", "Ink.Runtime",
