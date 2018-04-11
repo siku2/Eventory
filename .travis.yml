@@ -22,6 +22,7 @@ install:
 - pip install codecov
 - pip install pytest pytest-cov pytest-asyncio
 - pip install pycparser
+- pip install https://github.com/Rapptz/discord.py/archive/rewrite.zip
 - pip install -e .[ink,discord]
 script:
 - python -m pytest --cov=./

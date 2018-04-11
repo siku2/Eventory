@@ -26,7 +26,7 @@ class Mock(MagicMock):
         return MagicMock()
 
 
-MOCK_MODULES = ["clr", "System.IO", "Ink"]
+MOCK_MODULES = ["clr", "System.IO", "Ink.Runtime"]
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 # -- Project information -----------------------------------------------------
