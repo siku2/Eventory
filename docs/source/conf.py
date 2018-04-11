@@ -25,6 +25,10 @@ class Mock(MagicMock):
     def __getattr__(cls, name):
         return MagicMock()
 
+    # for discord.version_info comparison
+    def __lt__(self, other):
+        return True
+
 
 MOCK_MODULES = ["clr", "System.IO", "Ink.Runtime",
                 "discord", "discord.embeds", "discord.ext.commands"]
