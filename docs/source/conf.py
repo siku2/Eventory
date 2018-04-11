@@ -19,8 +19,10 @@
 import sys
 from unittest.mock import MagicMock
 
-MOCK_MODULES = ["clr", "System.IO", "Ink.Runtime"]
-sys.modules.update((mod_name, MagicMock()) for mod_name in MOCK_MODULES)
+
+class MockSysIO:
+    class FileNotFoundException(Exception):
+        pass
 
 
 class MockDiscord:
@@ -34,15 +36,23 @@ class MockDiscord:
         class commands:
             Bot = Context = object
 
+            class Command:
+                def command(*args, **kwargs):
+                    def wrapper(func):
+                        return func
+
+                    return wrapper
+
             def group(*args, **kwargs):
                 def wrapper(func):
-                    return func
+                    return MockDiscord.ext.commands.Command()
 
                 return wrapper
 
 
-MOCK_DISCORD = [("discord", MockDiscord), ("discord.embeds", MockDiscord.embeds), ("discord.ext.commands", MockDiscord.ext.commands)]
-sys.modules.update((mod_name, mod_src) for mod_name, mod_src in MOCK_DISCORD)
+MOCK_MODULES = [("clr", None), ("System.IO", MockSysIO), ("Ink.Runtime", None),
+                ("discord", MockDiscord), ("discord.embeds", MockDiscord.embeds), ("discord.ext.commands", MockDiscord.ext.commands)]
+sys.modules.update((mod_name, mod_src or MagicMock()) for mod_name, mod_src in MOCK_MODULES)
 
 # -- Project information -----------------------------------------------------
 
