@@ -26,7 +26,8 @@ class Mock(MagicMock):
         return MagicMock()
 
 
-MOCK_MODULES = ["clr", "System.IO", "Ink.Runtime"]
+MOCK_MODULES = ["clr", "System.IO", "Ink.Runtime",
+                "discord", "discord.embeds", "discord.ext.commands"]
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 # -- Project information -----------------------------------------------------
