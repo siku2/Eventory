@@ -17,23 +17,32 @@
 # sys.path.insert(0, os.path.abspath('.'))
 
 import sys
+from unittest.mock import MagicMock
+
+MOCK_MODULES = ["clr", "System.IO", "Ink.Runtime"]
+sys.modules.update((mod_name, MagicMock()) for mod_name in MOCK_MODULES)
 
 
-class Mock:
-    def __getattr__(self, item):
-        return Mock()
+class MockDiscord:
+    version_info = 1, 0, 0
+    Client = Colour = DMChannel = Embed = Message = TextChannel = User = object
 
-    def __getitem__(self, item):
-        return Mock()
+    class embeds:
+        EmptyEmbed = object
 
-    # fix for discord.version_info
-    def __lt__(self, other):
-        return False
+    class ext:
+        class commands:
+            Bot = Context = object
+
+            def group(*args, **kwargs):
+                def wrapper(func):
+                    return func
+
+                return wrapper
 
 
-MOCK_MODULES = ["clr", "System.IO", "Ink.Runtime",
-                "discord", "discord.embeds", "discord.ext.commands"]
-sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+MOCK_DISCORD = [("discord", MockDiscord), ("discord.embeds", MockDiscord.embeds), ("discord.ext.commands", MockDiscord.ext.commands)]
+sys.modules.update((mod_name, mod_src) for mod_name, mod_src in MOCK_DISCORD)
 
 # -- Project information -----------------------------------------------------
 
