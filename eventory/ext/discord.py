@@ -24,17 +24,25 @@ from collections import Iterable, deque
 from typing import Dict, Optional, Union
 
 import discord
-from discord import Client, Colour, DMChannel, Embed, Message, TextChannel, User
+from discord import Client, Colour, Embed, Message, User
 from discord.embeds import EmptyEmbed
 from discord.ext.commands import Bot, Context, group
 
 from eventory import Eventarrator, Eventorial, Eventructor
 
-if discord.version_info[:3] < (1, 0, 0):
-    import warnings
+_REWRITE = discord.version_info[:3] >= (1, 0, 0)
 
+if _REWRITE:
+    from discord import DMChannel, TextChannel
+
+    DiscordTextChannel = Union[TextChannel, DMChannel]
+else:
+    import warnings
+    from discord import PrivateChannel, Channel
+
+    DiscordTextChannel = Union[PrivateChannel, Channel]
     warnings.warn(
-        "It seems that you're not using Discord.py rewrite. This extension is written for the rewrite version of Discord.py so it doesn't "
+        "It seems that you're not using the Discord.py rewrite. This extension is written for the rewrite version of Discord.py so it doesn't "
         "necessarily run on your version", ImportWarning)
 
 log = logging.getLogger(__name__)
@@ -52,14 +60,14 @@ class DiscordEventarrator(Eventarrator):
 
     Attributes:
         client (Client)
-        channel (Union[TextChannel, DMChannel])
+        channel (DiscordTextChannel)
         users (Optional[Set[User]]): Set of users to listen to
         message_check (Optional[Callable[[Message], Union[bool, Awaitable[bool]]])
         options (dict): Leftover keyword arguments passed to the constructor
         sent_messages (deque): Deque containing the ids of the last 10 messages sent by the Eventarrator
     """
 
-    def __init__(self, client: Client, channel: Union[TextChannel, DMChannel], **options):
+    def __init__(self, client: Client, channel: DiscordTextChannel, **options):
         self.client = client
         self.channel = channel
         users = options.pop("users", None)
@@ -204,10 +212,10 @@ class EventoryCog:
         self.eventorial = Eventorial(directory=directory, loop=self.bot.loop)
         self.instructors = {}
 
-    def get_instructor(self, channel: Union[int, Context, DMChannel, TextChannel]) -> Optional[Eventructor]:
+    def get_instructor(self, channel: Union[int, Context, DiscordTextChannel]) -> Optional[Eventructor]:
         if isinstance(channel, Context):
             channel = channel.channel
-        if isinstance(channel, (DMChannel, TextChannel)):
+        if isinstance(channel, DiscordTextChannel):
             channel = channel.id
         instructor = self.instructors.get(channel, None)
         if instructor:

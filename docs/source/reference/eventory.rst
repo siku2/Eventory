@@ -1,5 +1,5 @@
-eventory package
-================
+Eventory Reference
+==================
 
 Subpackages
 -----------
