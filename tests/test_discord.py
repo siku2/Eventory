@@ -1,21 +1,43 @@
+import os
+
 import pytest
 from discord.ext.commands import Bot
 
 from eventory.ext.discord import EventoryCog
 
 
-@pytest.fixture(scope="module")
-def bot():
+class MockBot(Bot):
+    async def on_ready(self):
+        try:
+            pass
+        finally:
+            pass
+            # await self.logout()
+
+    async def on_command_error(self, exception, context):
+        await self.logout()
+        raise exception
+
+
+def test_extension_load():
     b = Bot("!")
-    return b
+    b.load_extension("eventory.ext.discord")
+    assert b.cogs.pop("Eventory")
+    b.unload_extension("eventory.ext.discord")
 
 
-def test_loading(bot: Bot):
-    bot.load_extension("eventory.ext.discord")
-    assert bot.cogs.pop("Eventory")
-    bot.unload_extension("eventory.ext.discord")
+def test_cog_loading():
+    b = Bot("!")
+    cog = EventoryCog(b)
+    b.add_cog(cog)
+    assert b.cogs.pop("Eventory")
+    b.remove_cog("Eventory")
 
+
+@pytest.mark.asyncio
+async def test_cog():
+    bot = MockBot("!")
     cog = EventoryCog(bot)
     bot.add_cog(cog)
-    assert bot.cogs.pop("Eventory")
-    bot.remove_cog("Eventory")
+    token = os.environ["DISCORD_TOKEN"]
+    await bot.start(token)
