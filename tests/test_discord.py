@@ -11,8 +11,7 @@ class MockBot(Bot):
         try:
             pass
         finally:
-            pass
-            # await self.logout()
+            await self.logout()
 
     async def on_command_error(self, exception, context):
         await self.logout()
