@@ -13,7 +13,7 @@ Attributes:
 __title__ = "Eventory"
 __description__ = "Framework for telling interactive stories!"
 __url__ = "https://siku2.github.io/Eventory/"
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 __author__ = "siku2"
 __author_email__ = "siku2@outlook.com"
 __license__ = "MIT"
