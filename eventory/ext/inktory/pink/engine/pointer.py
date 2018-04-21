@@ -1,17 +1,17 @@
-from typing import Optional, TYPE_CHECKING
+from typing import Optional
 
+from .container import Container
+from .object import Object
 from .path import Component, Path
-
-if TYPE_CHECKING:
-    from .object import Object
-    from .container import Container
 
 
 class Pointer:
-    container: "Container"
+    Null: "Pointer"
+
+    container: Container
     index: int
 
-    def __init__(self, container: Optional["Container"], index: int):
+    def __init__(self, container: Optional[Container], index: int):
         self.container = container
         self.index = index
 
@@ -29,7 +29,7 @@ class Pointer:
         else:
             return self.container.path
 
-    def resolve(self) -> Optional["Object"]:
+    def resolve(self) -> Optional[Object]:
         if self.index < 0:
             return self.container
         if self.container is None:
@@ -41,7 +41,7 @@ class Pointer:
         return self.container.content[self.index]
 
     @staticmethod
-    def start_of(container: "Container") -> "Pointer":
+    def start_of(container: Container) -> "Pointer":
         return Pointer(container, 0)
 
 
