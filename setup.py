@@ -32,7 +32,7 @@ setup(
     author=about["__author__"],
     author_email=about["__author_email__"],
     license=about["__license__"],
-    packages=["eventory", "eventory.ext.discord", "eventory.ext.inktory"],
+    packages=["eventory", "eventory.ext", "eventory.ext.discord", "eventory.ext.inktory"],
     install_requires=requires,
     extras_require=extras_require,
     dependency_links=dependency_links,
