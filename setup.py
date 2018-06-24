@@ -1,6 +1,6 @@
 import os
 
-from setuptools import setup
+from setuptools import find_packages, setup
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -32,7 +32,7 @@ setup(
     author=about["__author__"],
     author_email=about["__author_email__"],
     license=about["__license__"],
-    packages=["eventory", "eventory.ext"],
+    packages=find_packages(),
     install_requires=requires,
     extras_require=extras_require,
     dependency_links=dependency_links,
